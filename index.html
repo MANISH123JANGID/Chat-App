@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyChat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <br>
+        <div class="jumbotron">
+            <h1 class="display-4">Send Message </h1>
+            <br>
+            <input id="name" class="form-control" placeholder="Name">
+            <br>
+            <textarea id="message" class="form-control" placeholder="Message"></textarea>
+            <br>
+            <button id="send" class="btn btn-success" type="button">SEND</button>
+            <br>
+        </div>
+        <div id="messages">
+
+        </div>
+        <script type="text/javascript">
+            var socket=io()
+            $(()=>{
+    
+                $('#send').click(()=>{
+                    let message ={name:$('#name').val(),message:$('#message').val()}
+                    postMessage(message);
+                })
+               getMessage();
+            })
+
+            socket.on('message',addMessage)
+            
+            function addMessage(message){
+                $('#messages').append(`<p>${message.name}</p> <h1>${message.message}</h1> <br>`);
+            }
+
+            function getMessage(){
+                $.get('http://localhost:3000/messages',(data)=>{
+                    data.forEach((element)=>{
+                        addMessage(element)
+                    },this)
+                })
+            }
+            
+            function postMessage(message){
+                $.post('http://localhost:3000/messages',message) 
+            }
+            
+        </script>
+    </div>
+
+</body>
+</html>
