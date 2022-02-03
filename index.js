@@ -4,8 +4,7 @@ const app = express();
 const mongoose = require('mongoose');
 const http= require('http').Server(app);
 const io= require('socket.io')(http); 
-var userMessage= require('./schema');
-
+const port=process.env.PORT || 3000;
 mongoose.connect('mongodb+srv://user:987654321@cluster0.qsbdg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',(err)=>{
     console.log("CONNECTED TO DATABASE SUCCESSFULLY",err);
 })
@@ -26,11 +25,10 @@ app.get('/messages',(req,res) => {
 })
 
 app.post('/messages', async (req, res) => {
-    try {
+    try{
         let Message = await new message(req.body);
-
-         await Message.save()
-        console.log('message saved');
+        let mesaa= await Message.save()
+        console.log('message saved', mesaa);
         let censored= await  message.findOne({message:'badword'})
         if(censored){
         console.log('CENSORED WORD FOUND!')
@@ -40,8 +38,9 @@ app.post('/messages', async (req, res) => {
         io.emit('message', req.body)
         res.sendStatus(200);
 
-    } catch(error){
-        sendStatus(500);
+    }
+    catch(error){
+        res.sendStatus(500);
         console.log(error);
     }
 })
@@ -52,6 +51,6 @@ io.on('connection',(socket) =>{
     console.log("A NEW USER CONNECTED");
 })
 
-const server= http.listen(3001,()=>{
+const server= http.listen(port,()=>{
     console.log('SERVER IS RUNNING ON PORT', server.address().port);
 })
